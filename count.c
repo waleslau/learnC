@@ -5,7 +5,7 @@ int main()
     while (count >= 0) {
         printf("%d\n", count);
         count--;
-        }
+    }
     printf("发射！！");
     return 0;
 }
