@@ -248,3 +248,142 @@ int b[] = a; // 错误做法！
 > 在一个数组中找到某个数的位置（或确认是否存在）
 
 - 遍历
+- 二分查找
+  - 必须在有序数据中进行查找
+
+### 排序初步
+
+```c
+#include <stdio.h>
+int max(int a[], int len)
+{
+    int maxid = 0;
+    for (int i = 0; i < len; i++) {
+        if (a[i] > a[maxid]) {
+            maxid = i;
+        }
+    }
+    return maxid;
+}
+
+int main()
+{
+    int a[] = { 12, 34, 56, 78, 98, 76, 54, 32, 1 };
+    int len = sizeof(a) / sizeof(a[0]);
+
+    for (int i = len - 1; i > 0; i--) {
+        int maxid = max(a, i + 1);
+        // swap a[maxid],a[len-1]
+        int t = a[maxid];
+        a[maxid] = a[i];
+        a[i] = t;
+    }
+
+    for (int i = 0; i < len; i++) {
+        printf("%d ", a[i]);
+    }
+
+    return 0;
+}
+```
+
+## 指针
+
+### 运算符`&`
+
+- `scanf(“%d”,&i);`里的`&`
+- 它的作用是获得变量的地址，它的操作数必须是变量
+  - `int i=0;printf("%x\n", &i);`
+- 地址的大小是否与 int 相同取决于编译器(32 位的相同，64 位的不相同)
+
+  - `int i=0;printf("%p\n", &i);`
+
+- `&`不能对不是变量的东西取地址
+
+### 指针
+
+```c
+int i;
+int* p = &i; // *表示p是一个指针，指向的是一个int，
+
+// 下面两行意思是一样的，
+// 都表示p是一个指针，指向的是一个int，q都是一个普通的int类型变量
+int* p,q;
+int *p,q;
+// * 并不是加给了“int”，而是加给了“p”
+// “*p” 是一个int，于是p是一个指针
+// 并没有“int *”这种类型
+```
+
+- 指针类型的变量，就是保存地址的变量
+- 变量的值是内存的地址
+  - 普通变量的值是实际的值
+  - 指针变量的值是具有实际值的变量的地址
+
+- `void f(int *p);`
+  - 在被调用时得到了某个变量的地址
+  - `int i=0;f(&i)`
+  - 在函数里可以通过指针来访问外面这个i
+
+```c
+#include <stdio.h>
+
+void f(int* p);
+void g(int k);
+
+int main(void)
+{
+    int i = 6;
+    printf("&i=%p\n", &i); // 打印i的地址
+    f(&i); // 把i的地址交给函数f()里的变量p
+    g(i); // 把i的值交给函数g()里的变量k
+    return 0;
+}
+
+void f(int* p)
+{ // 在函数里可以通过指针来访问外面的i
+    printf(" p=%p\n", p);
+    printf("*p=%d\n", *p); // 这里 *p 作为一个整体时表示地址对应变量的值
+    printf("sizeof(p)=%d\n", sizeof(p));
+    printf("sizeof(*p)=%d\n", sizeof(*p));
+    *p = 26; // 把地址为 p 的变量的值改为26
+}
+
+void g(int k)
+{
+    printf("k=%d\n", k);
+}
+```
+
+- `*`是一个单目运算符，用来访问指针的值所表示的地址上的变量
+
+  - 可以做左值也可以做右值
+
+  - `int k = *p;`
+
+    `*p = k+1;`
+
+### 指针与数组
+
+- 传入函数的数组
+  - 函数参数表的数组实际上是一个指针
+
+  - 但是可以用数组的运算符`[]`进行运算
+  - 以下四种函数原型是等价的：
+    - `int sum(int *ar,int n);`
+    - `int sum(int *,int);`
+    - `int sum(int ar[],int n);`
+    - `int sum(int [],int);`
+
+- 数组变量是特殊的指针，所以
+  - `int a[10]; int* p=a;` // 无需用 & 取地址
+  - `a == &a[0]` // 数组的单元表达的是变量，需要用&取地址
+
+- `[ ]` 运算符可以对数组做，也可以对指针做
+  - `p[0]`<==>`a[0]`
+- `*`运算符可以对指针做，也可以对数组做
+  - `*a=25`
+- 数组变量是一个 const 的指针，所以不能被赋值
+  - `int a[]` <==> `int * const a = ....`
+
+![image-20210914234946662](foundation.assets/image-20210914234946662.png)
